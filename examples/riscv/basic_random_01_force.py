@@ -34,6 +34,16 @@ class MainSequence(Sequence):
         force/py/DV/riscv/trees/instruction_tree.py.
     3 if you want to a specific instruction, set the_instruction2 to the
         appropriate string and use the_instruction2 in the genInstruction call.
+    
+    生成从指定的RISC-V指令子集中随机选择的指令序列。
+    1 通过设置instruction_count来指定要生成的指令数量
+    2 通过设置instruction_group来指定所需的子集。下面列出了一些预定义的指令子集，
+        除了一个外，其他语句都被注释掉了。只需取消注释您想要使用的子集，
+        同时注释掉其他子集。有关每个子集中特定指令的更多详细信息
+        以及其他可用预定义子集的列表，请参见
+        force/py/DV/riscv/trees/instruction_tree.py。
+    3 如果您想要特定的指令，请将the_instruction2设置为适当的字符串，
+        并在genInstruction调用中使用the_instruction2。
     """
 
     def generate(self, **kargs):
@@ -41,6 +51,9 @@ class MainSequence(Sequence):
         # 1 - set the number of instructions to generate,
         # can configure via control file with generator option -
         # 'instruction_count'
+        # 1 - 设置要生成的指令数量，
+        # 可以通过控制文件使用生成器选项 -
+        # 'instruction_count' 进行配置
         (count_opt, count_opt_valid) = self.getOption("instruction_count")
         if count_opt_valid:
             instruction_count = count_opt
@@ -48,6 +61,7 @@ class MainSequence(Sequence):
             instruction_count = 100
 
         # 2 - Choose the subset of RISCV instruction you wish to use
+        # 2 - 选择您希望使用的RISCV指令子集
         instruction_group = (
             RV32_G_instructions
             if self.getGlobalState("AppRegisterWidth") == 32
@@ -68,20 +82,31 @@ class MainSequence(Sequence):
         # string values to use for a given instruction, search for that
         # instruction in force/py/DV/riscv/trees/instruction_tree.py.
         # the_instruction2 = "ADD##RISCV"
+        
+        # 3 - 如果您想要指定特定的指令，请在此处将the_instruction2设置为
+        # 适当的字符串，并将genInstruction调用中的参数替换为the_instruction2。
+        # 对于给定指令要使用的字符串值，请在
+        # force/py/DV/riscv/trees/instruction_tree.py中搜索该指令。
+        # the_instruction2 = "ADD##RISCV"
         """
         for _ in range(instruction_count):
             # select a specific instruction from the instruction group
+            # 从指令组中选择一个特定的指令
             the_instruction = self.pickWeighted(instruction_group)
 
             # create the instruction
+            # 创建指令
             record_id = self.genInstruction(the_instruction)
 
 
 #  Points to the MainSequence defined in this file
+#  指向此文件中定义的MainSequence
 MainSequenceClass = MainSequence
 
 #  Using GenThreadRISCV by default, can be overriden with extended classes
+#  默认使用GenThreadRISCV，可以用扩展类覆盖
 GenThreadClass = GenThreadRISCV
 
 #  Using EnvRISCV by default, can be overriden with extended classes
+#  默认使用EnvRISCV，可以用扩展类覆盖
 EnvClass = EnvRISCV
