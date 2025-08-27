@@ -275,7 +275,19 @@ namespace Force {
 
   py::object PyInterface::GenInstruction(uint32 threadId, const std::string& instrName, const py::dict& parms)
   {
-    LOG(notice) << "GenInstruction called with instrName: " << instrName << ", params: " << py::str(py::cast(parms)) << endl;
+    LOG(notice) << "GenInstruction called with instrName: " << instrName << ", params:" << endl;
+    for (auto item : parms) {
+      std::string key = item.first.cast<std::string>();
+      std::string value_str;
+      if (py::isinstance<py::str>(item.second)) {
+        value_str = item.second.cast<std::string>();
+      } else if (py::isinstance<py::int_>(item.second)) {
+        value_str = std::to_string(cast_py_int(item.second));
+      } else {
+        value_str = "<unsupported type>";
+      }
+      LOG(notice) << "  " << key << ": " << value_str << endl;
+    }
     GenInstructionRequest * new_instr_req = new GenInstructionRequest(instrName);
     process_transaction_parameters<GenRequest>(parms, new_instr_req);
     std::string rec_id;
