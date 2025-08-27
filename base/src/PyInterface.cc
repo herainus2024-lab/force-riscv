@@ -275,7 +275,7 @@ namespace Force {
 
   py::object PyInterface::GenInstruction(uint32 threadId, const std::string& instrName, const py::dict& parms)
   {
-    LOG(notice) << "GenInstruction called with instrName: " << instrName << ", params: " << py::str(parms) << endl;
+    LOG(notice) << "GenInstruction called with instrName: " << instrName << ", params: " << py::str(py::cast(parms)) << endl;
     GenInstructionRequest * new_instr_req = new GenInstructionRequest(instrName);
     process_transaction_parameters<GenRequest>(parms, new_instr_req);
     std::string rec_id;
