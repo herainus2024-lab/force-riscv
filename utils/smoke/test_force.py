@@ -20,8 +20,15 @@ from base.Sequence import Sequence
 
 class MainSequence(Sequence):
     def generate(self, **kargs):
-        self.genInstruction("ADD##RISCV")
-        self.genInstruction("SRA##RISCV")
+        i_rec_id1 = self.genInstruction("ADD##RISCV")
+        i_rec_id2 = self.genInstruction("SRA##RISCV")
+        record1 = self.queryInstructionRecord("ADD##RISCV", i_rec_id1)
+        record2 = self.queryInstructionRecord("SRA##RISCV", i_rec_id2)
+
+        self.notice("record1内容: {}".format(record1))
+        self.notice("record2内容: {}".format(record2))
+        self.verifyInstruction("ADD##RISCV", record1)
+        self.verifyInstruction("SRA##RISCV", record2)
 
 
 #  Points to the MainSequence defined in this file
