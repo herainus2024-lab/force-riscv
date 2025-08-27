@@ -97,7 +97,7 @@ class MainSequence(Sequence):
             # create the instruction
             # 创建指令
             record_id = self.genInstruction(the_instruction)
-            slef.notice(">>>>> The instruction: {}".format(instr))
+            self.notice(">>>>> The instruction: {}".format(instr))
 
 
 #  Points to the MainSequence defined in this file
