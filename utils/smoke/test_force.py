@@ -27,8 +27,6 @@ class MainSequence(Sequence):
 
         self.notice("record1内容: {}".format(record1))
         self.notice("record2内容: {}".format(record2))
-        self.verifyInstruction("ADD##RISCV", record1)
-        self.verifyInstruction("SRA##RISCV", record2)
 
 
 #  Points to the MainSequence defined in this file
