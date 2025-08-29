@@ -52,6 +52,10 @@ class MyMainSequence(Sequence):
         # the selected instruction.  The code below will generated some
         # page crossings and some accesses that are at the end of the page,
         # but not crossing the page.
+        # 要生成跨页操作，目标地址位于
+        # 第一页的末尾，需要将页面偏移量设置为接近
+        # 页尾的某个值，该值取决于所选指令的目标操作数的大小。以下代码将生成一些
+        # 跨页操作以及一些位于页尾但未跨页的访问。
         min_addr_offset = 0
         if (instr in LDST_Byte_instructions) or (instr in LDST_Half_instructions):
             min_addr_offset = 0xFFC
