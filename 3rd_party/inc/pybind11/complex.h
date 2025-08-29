@@ -9,11 +9,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
-
 #include "pybind11.h"
 #include <complex>
 
@@ -22,7 +17,7 @@
 #  undef I
 #endif
 
-NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
+PYBIND11_NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
 
 template <typename T> struct format_descriptor<std::complex<T>, detail::enable_if_t<std::is_floating_point<T>::value>> {
     static constexpr const char c = format_descriptor<T>::c;
@@ -37,7 +32,7 @@ template <typename T> constexpr const char format_descriptor<
 
 #endif
 
-NAMESPACE_BEGIN(detail)
+PYBIND11_NAMESPACE_BEGIN(detail)
 
 template <typename T> struct is_fmt_numeric<std::complex<T>, detail::enable_if_t<std::is_floating_point<T>::value>> {
     static constexpr bool value = true;
@@ -66,9 +61,5 @@ public:
 
     PYBIND11_TYPE_CASTER(std::complex<T>, _("complex"));
 };
-NAMESPACE_END(detail)
-NAMESPACE_END(PYBIND11_NAMESPACE)
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+PYBIND11_NAMESPACE_END(detail)
+PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)

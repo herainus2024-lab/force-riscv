@@ -9,14 +9,9 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
-#endif
-
 #include "detail/common.h"
 
-NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
+PYBIND11_NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
 
 class options {
 public:
@@ -67,8 +62,4 @@ private:
     state previous_state;
 };
 
-NAMESPACE_END(PYBIND11_NAMESPACE)
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
