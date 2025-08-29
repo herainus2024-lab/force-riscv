@@ -9,6 +9,12 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -53,3 +59,7 @@ template <typename T> static std::string type_id() {
 }
 
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

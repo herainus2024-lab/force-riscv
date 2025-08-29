@@ -9,6 +9,11 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
 #define PYBIND11_VERSION_MAJOR 2
 #define PYBIND11_VERSION_MINOR 6
 #define PYBIND11_VERSION_PATCH 2
@@ -859,3 +864,7 @@ std::string get_fully_qualified_tp_name(PyTypeObject*);
 
 PYBIND11_NAMESPACE_END(detail)
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

@@ -10,6 +10,12 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
+
 #include "pybind11.h"
 #include <cmath>
 #include <ctime>
@@ -189,3 +195,7 @@ template <typename Rep, typename Period> class type_caster<std::chrono::duration
 
 PYBIND11_NAMESPACE_END(detail)
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

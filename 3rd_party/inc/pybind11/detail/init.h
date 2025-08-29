@@ -9,6 +9,12 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
+
 #include "class.h"
 
 PYBIND11_NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
@@ -334,3 +340,7 @@ struct pickle_factory<Get, Set, RetState(Self), NewInstance(ArgState)> {
 PYBIND11_NAMESPACE_END(initimpl)
 PYBIND11_NAMESPACE_END(detail)
 PYBIND11_NAMESPACE_END(pybind11)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

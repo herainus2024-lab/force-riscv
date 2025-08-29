@@ -9,6 +9,12 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
+
 #include "pybind11.h"
 
 #if defined(__clang__) && !defined(__INTEL_COMPILER)
@@ -167,6 +173,10 @@ using detail::self;
 using detail::hash;
 
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #if defined(_MSC_VER)
 #  pragma warning(pop)

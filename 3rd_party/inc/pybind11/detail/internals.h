@@ -9,6 +9,12 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
+
 #include "../pytypes.h"
 
 PYBIND11_NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
@@ -361,3 +367,7 @@ T &get_or_create_shared_data(const std::string &name) {
 }
 
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

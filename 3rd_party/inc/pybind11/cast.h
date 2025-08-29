@@ -10,6 +10,12 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
+
 #include "pytypes.h"
 #include "detail/typeid.h"
 #include "detail/descr.h"
@@ -2259,3 +2265,7 @@ handle type::handle_of() {
 #define PYBIND11_TYPE(...) __VA_ARGS__
 
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

@@ -9,6 +9,11 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
 #include "detail/common.h"
 #include "operators.h"
 
@@ -136,13 +141,6 @@ void vector_modifiers(enable_if_t<is_copy_constructible<typename Vector::value_t
         return v.release();
     }));
 
-    cl.def("clear",
-        [](Vector &v) {
-            v.clear();
-        },
-        "Clear the contents"
-    );
-
     cl.def("extend",
        [](Vector &v, const Vector &src) {
            v.insert(v.end(), src.begin(), src.end());
@@ -223,7 +221,7 @@ void vector_modifiers(enable_if_t<is_copy_constructible<typename Vector::value_t
             if (!slice.compute(v.size(), &start, &stop, &step, &slicelength))
                 throw error_already_set();
 
-            auto *seq = new Vector();
+            Vector *seq = new Vector();
             seq->reserve((size_t) slicelength);
 
             for (size_t i=0; i<slicelength; ++i) {
@@ -375,20 +373,10 @@ struct vector_has_data_and_format : std::false_type {};
 template <typename Vector>
 struct vector_has_data_and_format<Vector, enable_if_t<std::is_same<decltype(format_descriptor<typename Vector::value_type>::format(), std::declval<Vector>().data()), typename Vector::value_type*>::value>> : std::true_type {};
 
-// [workaround(intel)] Separate function required here
-// Workaround as the Intel compiler does not compile the enable_if_t part below
-// (tested with icc (ICC) 2021.1 Beta 20200827)
-template <typename... Args>
-constexpr bool args_any_are_buffer() {
-    return detail::any_of<std::is_same<Args, buffer_protocol>...>::value;
-}
-
-// [workaround(intel)] Separate function required here
-// [workaround(msvc)] Can't use constexpr bool in return type
-
 // Add the buffer interface to a vector
 template <typename Vector, typename Class_, typename... Args>
-void vector_buffer_impl(Class_& cl, std::true_type) {
+enable_if_t<detail::any_of<std::is_same<Args, buffer_protocol>...>::value>
+vector_buffer(Class_& cl) {
     using T = typename Vector::value_type;
 
     static_assert(vector_has_data_and_format<Vector>::value, "There is not an appropriate format descriptor for this vector");
@@ -407,33 +395,23 @@ void vector_buffer_impl(Class_& cl, std::true_type) {
         if (!detail::compare_buffer_info<T>::compare(info) || (ssize_t) sizeof(T) != info.itemsize)
             throw type_error("Format mismatch (Python: " + info.format + " C++: " + format_descriptor<T>::format() + ")");
 
+        auto vec = std::unique_ptr<Vector>(new Vector());
+        vec->reserve((size_t) info.shape[0]);
         T *p = static_cast<T*>(info.ptr);
         ssize_t step = info.strides[0] / static_cast<ssize_t>(sizeof(T));
         T *end = p + info.shape[0] * step;
-        if (step == 1) {
-            return Vector(p, end);
-        }
-        else {
-            Vector vec;
-            vec.reserve((size_t) info.shape[0]);
-            for (; p != end; p += step)
-                vec.push_back(*p);
-            return vec;
-        }
+        for (; p != end; p += step)
+            vec->push_back(*p);
+        return vec.release();
     }));
 
     return;
 }
 
 template <typename Vector, typename Class_, typename... Args>
-void vector_buffer_impl(Class_&, std::false_type) {}
+enable_if_t<!detail::any_of<std::is_same<Args, buffer_protocol>...>::value> vector_buffer(Class_&) {}
 
-template <typename Vector, typename Class_, typename... Args>
-void vector_buffer(Class_& cl) {
-    vector_buffer_impl<Vector, Class_, Args...>(cl, detail::any_of<std::is_same<Args, buffer_protocol>...>{});
-}
-
-PYBIND11_NAMESPACE_END(detail)
+NAMESPACE_END(detail)
 
 //
 // std::vector
@@ -531,7 +509,7 @@ class_<Vector, holder_type> bind_vector(handle scope, std::string const &name, A
 // std::map, std::unordered_map
 //
 
-PYBIND11_NAMESPACE_BEGIN(detail)
+NAMESPACE_BEGIN(detail)
 
 /* Fallback functions */
 template <typename, typename, typename... Args> void map_if_insertion_operator(const Args &...) { }
@@ -539,7 +517,7 @@ template <typename, typename, typename... Args> void map_assignment(const Args &
 
 // Map assignment when copy-assignable: just copy the value
 template <typename Map, typename Class_>
-void map_assignment(enable_if_t<is_copy_assignable<typename Map::mapped_type>::value, Class_> &cl) {
+void map_assignment(enable_if_t<std::is_copy_assignable<typename Map::mapped_type>::value, Class_> &cl) {
     using KeyType = typename Map::key_type;
     using MappedType = typename Map::mapped_type;
 
@@ -555,7 +533,7 @@ void map_assignment(enable_if_t<is_copy_assignable<typename Map::mapped_type>::v
 // Not copy-assignable, but still copy-constructible: we can update the value by erasing and reinserting
 template<typename Map, typename Class_>
 void map_assignment(enable_if_t<
-        !is_copy_assignable<typename Map::mapped_type>::value &&
+        !std::is_copy_assignable<typename Map::mapped_type>::value &&
         is_copy_constructible<typename Map::mapped_type>::value,
         Class_> &cl) {
     using KeyType = typename Map::key_type;
@@ -597,7 +575,7 @@ template <typename Map, typename Class_> auto map_if_insertion_operator(Class_ &
 }
 
 
-PYBIND11_NAMESPACE_END(detail)
+NAMESPACE_END(detail)
 
 template <typename Map, typename holder_type = std::unique_ptr<Map>, typename... Args>
 class_<Map, holder_type> bind_map(handle scope, const std::string &name, Args&&... args) {
@@ -673,4 +651,8 @@ class_<Map, holder_type> bind_map(handle scope, const std::string &name, Args&&.
     return cl;
 }
 
-PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif

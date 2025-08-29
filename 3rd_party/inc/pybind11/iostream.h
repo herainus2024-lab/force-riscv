@@ -9,6 +9,11 @@
 
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
+
 #include "pybind11.h"
 
 #include <streambuf>
@@ -218,3 +223,7 @@ inline class_<detail::OstreamRedirect> add_ostream_redirect(module_ m, std::stri
 }
 
 PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
